@@ -13,8 +13,12 @@
     const socket = io('http://localhost:3000');
 
     socket.on("connect", () => {
-        console.log(`You connected with id: ${socket.id}`)
-        socket.emit("custom-event", 10, "Hi", {a: "a"} )
+       displayMessage(`You connected with id: ${socket.id}`)
+    })
+
+    socket.on("receive-message", message => {
+        displayMessage(message)
+
     })
 
     const messageInput = document.getElementById("message");
@@ -25,11 +29,23 @@
 
 
     sendMessageButton.addEventListener("click", e => {
+        e.preventDefault()
         const message = messageInput.value;
         const room = roomInput.value;
 
+        if(message === "")return
         displayMessage(message);
 
+        socket.emit('send-message', message, room);
+        messageInput.value = "";
+
+    })
+
+    joinRoomButton.addEventListener("click", e => {
+        const room = roomInput.value;
+        socket.emit('join-room', room, message =>{
+            displayMessage(message) //callback Function
+        } )
     })
 
     function displayMessage(message){
