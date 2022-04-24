@@ -13,13 +13,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
+
+import io.socket.emitter.Emitter;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
     private final Texture background;
     private final SpriteBatch batch;
     private InputMultiplexer inputMultiplexer;
+
+    public String lobbyID;
+    public static Connection con;
 
     public StartScreen() {
         stage = new Stage();
@@ -70,6 +76,24 @@ public class StartScreen extends ScreenAdapter {
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new LobbyScreen());
+
+                /**
+                 * Create connection to Server
+                 */
+                con = new Connection();
+
+                /**
+                 * Emits Server, that the client wants to join a lobby
+                 */
+                Emitter.Listener el = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+                        lobbyID = args[0].toString();
+                        System.out.println("LobbyID: " + lobbyID);
+                    }
+                };
+                con.joinRoom(el);
             }
         };
     }

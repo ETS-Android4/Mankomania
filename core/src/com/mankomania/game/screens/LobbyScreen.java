@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.mankomania.game.MankomaniaGame;
 
+import io.socket.emitter.Emitter;
+
 public class LobbyScreen extends ScreenAdapter {
     private final Stage stage;
     private final Texture background;
@@ -24,6 +26,8 @@ public class LobbyScreen extends ScreenAdapter {
     private final Table tab;
     private final Table innerTab;
     private InputMultiplexer inputMultiplexer;
+
+    public String response;
 
     public LobbyScreen(){
         stage = new Stage();
@@ -94,6 +98,10 @@ public class LobbyScreen extends ScreenAdapter {
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
+                /**
+                 * Close connection
+                 */
+                StartScreen.con.closeConnection();
             }
         };
     }
@@ -102,6 +110,20 @@ public class LobbyScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
+
+                Emitter.Listener el = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+                        response = args[0].toString();
+                        System.out.println("LobbyID: " + response);
+                    }
+                };
+
+                StartScreen.con.readyForGame(el);
+
+                //weitermachen mit response...
+
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new GameScreen());
             }
