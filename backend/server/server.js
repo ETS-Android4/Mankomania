@@ -3,9 +3,12 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const {Server} = require("socket.io");
+const {createNewLobby} = require("./Lobby");
 const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
 //const { instrument } = require("@socket.io/admin-ui");
+
+
 
 let clientNo = 1;
 const lobbies = new Map();
@@ -30,6 +33,8 @@ console.log('Listing on*:3000')
         });
 
         socket.on('readyForGame', (room) =>{
+
+
             console.log(room)
         });
 
@@ -43,23 +48,26 @@ console.log('Listing on*:3000')
 
 })
 
-
-
  async function validateRoom(room, socket) {
      if (room === '') {
          clientNo++;
          let room = Math.round(clientNo / 4)
          socket.join(room);
-         
+
+
          idsInRoom(room).then(
              function(ids){
                  console.log(ids);
                  socket.emit("join-room", room, ids)
                  socket.to(room).emit("join-room", room, ids)
                  console.log(socket.id + " joined " + room)
+                 createNewLobby(room)
+             },
+             function(ids){
+                console.log(ids)
+                 //toDo
              }
-         )
-
+         );
 
      } else {
          //client --> check if room is naN
@@ -87,35 +95,4 @@ function startGame(){
 instrument(io, {
     auth: false
 });
-*/
-/*
-io.on("connection",socket => {
-    console.log(socket.id)
-    socket.on("send-message", (message, room) => {
-        if(room === ""){
-            socket.broadcast.emit('receive-message', message)
-        }else{
-            socket.to(room).emit('receive-message', message)
-        }
-    })
-
-    socket.on('join-room', (room, cb) =>{
-        socket.join(room)
-        cb(`Joined ${room}`)
-    })
-
-    socket.on("disconnect",function(){
-        console.log(socket.id + "Disconnected")
-
-    });
-
-})
-
- */
-/*
-io.on('connection', () =>{
-    socket.on('message', msg =>{
-        io.emit('message', msg)
-    })
-})
 */
