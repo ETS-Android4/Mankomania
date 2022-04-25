@@ -6,14 +6,18 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.DiceAnimation;
+import com.mankomania.game.MankomaniaGame;
 
 public class GameScreen extends ScreenAdapter {
     private final Texture gameBoard;
@@ -144,6 +148,7 @@ public class GameScreen extends ScreenAdapter {
             TextButton startTurnButton = new TextButton("START TURN", skin, "default");
             startTurnButton.setTransform(true);
             turnDialog.button(startTurnButton, true).padBottom(20);
+            startTurnButton.addListener(startTurnListener());
         } else {
             Label l4 = new Label("Waiting for player...", skin, "default");
             tab.add(l4).row();
@@ -165,6 +170,17 @@ public class GameScreen extends ScreenAdapter {
 
     private float calcBoardSize() {
         return Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR;
+    }
+
+
+    public ClickListener startTurnListener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                hideTurnDialog();
+                MankomaniaGame.getInstance().setScreen(new DiceAnimation());
+            }
+        };
     }
 
     @Override
