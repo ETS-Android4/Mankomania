@@ -29,6 +29,11 @@
         lobby = room;
     })
 
+    socket.on('startGame', () =>{
+        displayMessage("Game starts");
+
+    })
+
     const messageInput = document.getElementById("message");
     const roomInput = document.getElementById("room");
 

@@ -1,11 +1,4 @@
-const lobby = new Map();
-
-
-lobby.set("1", 4)
-lobby.set("2", 4)
-lobby.set("3", 4)
-
-console.log(lobby.get("1"))
-
-lobby.set("1", 5)
-console.log(lobby.get("1"))
+const test = new Map();
+let a = "1"
+test.set(a, 10)
+console.log(test.get(a))
