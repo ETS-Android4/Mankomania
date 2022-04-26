@@ -27,9 +27,8 @@ public class LobbyScreen extends ScreenAdapter {
     private final Table innerTab;
     private InputMultiplexer inputMultiplexer;
 
-    public String response;
+    public LobbyScreen() {
 
-    public LobbyScreen(){
         stage = new Stage();
         batch = new SpriteBatch();
         background = new Texture("background.jpg");
@@ -50,7 +49,7 @@ public class LobbyScreen extends ScreenAdapter {
     }
 
     @Override
-    public void show(){
+    public void show() {
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
         skin.getFont("font").getData().setScale(5, 5);
 
@@ -71,15 +70,15 @@ public class LobbyScreen extends ScreenAdapter {
         innerTab.setBackground(lobbyBackground);
         innerTab.add().expandY();
         innerTab.row();
-        innerTab.add(new Label("Player1",skin)).pad(20f).align(Align.center);
+        innerTab.add(new Label("Player1", skin)).pad(20f).align(Align.center);
         innerTab.row();
-        innerTab.add(new Label("Player2",skin)).pad(20f).align(Align.center);
+        innerTab.add(new Label("Player2", skin)).pad(20f).align(Align.center);
         innerTab.row();
-        innerTab.add(new Label("Player3",skin)).pad(20f).align(Align.center);
+        innerTab.add(new Label("Player3", skin)).pad(20f).align(Align.center);
         innerTab.row();
         innerTab.add().expandY();
 
-        tab.add(lobbyImage).size(Gdx.graphics.getWidth() / 4f,Gdx.graphics.getHeight() / 5f).padTop(50).colspan(2).center();
+        tab.add(lobbyImage).size(Gdx.graphics.getWidth() / 4f, Gdx.graphics.getHeight() / 5f).padTop(50).colspan(2).center();
         tab.row();
         tab.add(innerTab).colspan(2).expandY();
         tab.row();
@@ -92,7 +91,7 @@ public class LobbyScreen extends ScreenAdapter {
     }
 
 
-    public ClickListener backListener(){
+    public ClickListener backListener() {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
@@ -101,31 +100,35 @@ public class LobbyScreen extends ScreenAdapter {
                 /**
                  * Close connection
                  */
-                StartScreen.con.closeConnection();
+                //StartScreen.con.closeConnection();
             }
         };
     }
 
-    public ClickListener startListener(){
+    public ClickListener startListener() {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
 
+                /**
+                 * Emits to server, that the client is ready to play
+                 */
                 Emitter.Listener el = new Emitter.Listener() {
 
                     @Override
                     public void call(Object... args) {
-                        response = args[0].toString();
-                        System.out.println("LobbyID: " + response);
+                        System.out.println("Response: " + args[0]);
+                        // MankomaniaGame.getInstance().disposeCurrentScreen();
+                        // MankomaniaGame.getInstance().setScreen(new GameScreen());
                     }
                 };
 
-                StartScreen.con.readyForGame(el);
+                /**
+                 * Server responses with "startGame", when all clients are ready
+                 */
 
-                //weitermachen mit response...
+                StartScreen.con.readyForGame(el, StartScreen.lobbyID);
 
-                MankomaniaGame.getInstance().disposeCurrentScreen();
-                MankomaniaGame.getInstance().setScreen(new GameScreen());
             }
         };
     }

@@ -24,8 +24,10 @@ public class StartScreen extends ScreenAdapter {
     private final SpriteBatch batch;
     private InputMultiplexer inputMultiplexer;
 
-    public String lobbyID;
+    public static String lobbyID;
     public static Connection con;
+    public String[] players = new String[4]; //Array with players ID
+
 
     public StartScreen() {
         stage = new Stage();
@@ -84,6 +86,7 @@ public class StartScreen extends ScreenAdapter {
 
                 /**
                  * Emits Server, that the client wants to join a lobby
+                 * Server returns String Array with IDs of players
                  */
                 Emitter.Listener el = new Emitter.Listener() {
 
@@ -91,6 +94,17 @@ public class StartScreen extends ScreenAdapter {
                     public void call(Object... args) {
                         lobbyID = args[0].toString();
                         System.out.println("LobbyID: " + lobbyID);
+
+                        String temp = args[1].toString().substring(1, args[1].toString().length()-1);
+
+                        String temp1 = temp.replaceAll("[\"]", "");
+
+                        players = temp1.split(",");
+
+                        for(int i = 0; i < players.length; i++){
+                            System.out.println("Player " + i + ": " + players[i]);
+                        }
+
                     }
                 };
                 con.joinRoom(el);

@@ -1,13 +1,14 @@
 package com.mankomania.game;
 
 import java.net.URISyntaxException;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-public class Connection{
+public class Connection {
     private final String server = "https://mankomania-backend.herokuapp.com/";
-    //private final int port = 53216;
+    //private final int port;
     private Socket cs;
 
     /**
@@ -27,25 +28,22 @@ public class Connection{
         }
     }
 
-    public void joinRoom(Emitter.Listener el){
+    public void joinRoom(Emitter.Listener el) {
+        cs.on("join-room", el);
         cs.emit("join-room", "");
-        cs.once("join-room", el);
-
     }
 
-    public void readyForGame(Emitter.Listener el){
-        cs.emit("readyForGame", "");
-        cs.once("NAN", el);
-
-        System.out.println("Emit Event to server");
-
+    public void readyForGame(Emitter.Listener el, String lobbyID) {
+        cs.on("startGame", el);
+        System.out.println(lobbyID);
+        cs.emit("readyForGame", lobbyID);
     }
 
 
     /**
      * Close connection to server
      */
-    public void closeConnection(){
+    public void closeConnection() {
 
         cs.disconnect();
         cs.off();
