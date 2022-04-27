@@ -99,7 +99,6 @@ public class LobbyScreen extends ScreenAdapter {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
 
-                //StartScreen.con.closeConnection();
             }
         };
     }
@@ -113,16 +112,14 @@ public class LobbyScreen extends ScreenAdapter {
 
                     @Override
                     public void call(Object... args) {
-                        System.out.println("Response: " + args[0]);
-
-                        Connection.start = true;
+                        Connection.getCon().setStart(true);
 
                     }
                 };
 
-                Connection.con.readyForGame(el, Connection.lobbyID);
+                Connection.getCon().readyForGame(el, Connection.getLobbyID());
 
-                if(Connection.start == true){
+                if(Connection.getCon().getStart()){
                     MankomaniaGame.getInstance().disposeCurrentScreen();
                     MankomaniaGame.getInstance().setScreen(new GameScreen());
                 }

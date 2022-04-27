@@ -10,12 +10,56 @@ public class Connection {
     private final String server = "https://mankomania-backend.herokuapp.com/";
     private Socket cs;
 
-    public static boolean start = false;
-    public static Connection con;
-    public static String lobbyID;
-    public static String[] players = new String[4]; //Array with players ID
+    private boolean start = false;
+    private static Connection con;
+    private static String lobbyID;
+    private static String[] players = new String[4]; //Array with players ID
     public static void createConnection(){
         con = new Connection();
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public Socket getCs() {
+        return cs;
+    }
+
+    public void setCs(Socket cs) {
+        this.cs = cs;
+    }
+
+    public boolean getStart() {
+        return start;
+    }
+
+    public void setStart(boolean start) {
+        this.start = start;
+    }
+
+    public static Connection getCon() {
+        return con;
+    }
+
+    public static void setCon(Connection con) {
+        Connection.con = con;
+    }
+
+    public static String getLobbyID() {
+        return lobbyID;
+    }
+
+    public static void setLobbyID(String lobbyID) {
+        Connection.lobbyID = lobbyID;
+    }
+
+    public static String[] getPlayers() {
+        return players;
+    }
+
+    public static void setPlayers(String[] players) {
+        Connection.players = players;
     }
 
     public Connection() {

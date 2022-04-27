@@ -81,21 +81,18 @@ public class StartScreen extends ScreenAdapter {
 
                     @Override
                     public void call(Object... args) {
-                        Connection.lobbyID = args[0].toString();
+                        Connection.setLobbyID(args[0].toString());
 
                         String temp = args[1].toString().substring(1, args[1].toString().length()-1);
 
                         String temp1 = temp.replaceAll("[\"]", "");
 
-                        Connection.players = temp1.split(",");
+                        Connection.setPlayers(temp1.split(","));
 
-                        for(int i = 0; i < Connection.players.length; i++){
-                            System.out.println("Player " + i + ": " + Connection.players[i]);
-                        }
                     }
                 };
 
-                Connection.con.joinRoom(el);
+                Connection.getCon().joinRoom(el);
             }
         };
     }
