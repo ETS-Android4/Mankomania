@@ -41,7 +41,7 @@ public class GameScreen extends ScreenAdapter {
     private static final String BOARD_TEXT_STYLE = "title";
 
     private DiceAnimation diceAnimation;
-    private final float duration = 3;
+    private static final float duration = 3;
     private float elapsed;
 
     public GameScreen() {
@@ -67,10 +67,10 @@ public class GameScreen extends ScreenAdapter {
     public void render(float delta) {
         if (elapsed >= duration){
             diceAnimation.removeDice();
-        diceAnimation.diceShown = false;
+        diceAnimation.setDiceShown(false);
         }
         super.render(delta);
-        if(diceAnimation.diceShown){
+        if(diceAnimation.getDiceShown()){
             elapsed+=delta;
         }
         stage.act(delta);

@@ -5,20 +5,20 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
 
 
 public class DiceAnimation extends ScreenAdapter {
 
-    private final Random random;
+    private final SecureRandom random;
     private final ArrayList<Image> firstDiceList;
     private final ArrayList<Image> secondDiceList;
     private final float spacing = Gdx.graphics.getWidth() / 14f;
-    public boolean diceShown;
+    private boolean diceShown;
 
     public DiceAnimation() {
-        random = new Random();
+        random = new SecureRandom();
         firstDiceList = new ArrayList<>();
         secondDiceList = new ArrayList<>();
         initDice();
@@ -45,9 +45,7 @@ public class DiceAnimation extends ScreenAdapter {
                 image.setVisible(true);
             }
         }
-        diceShown = true;
-
-        int sum = num+num2;
+        setDiceShown(true);
     }
 
     public void removeDice() {
@@ -62,6 +60,14 @@ public class DiceAnimation extends ScreenAdapter {
                 image.remove();
             }
         }
+    }
+
+    public void setDiceShown(boolean diceShown) {
+        this.diceShown = diceShown;
+    }
+
+    public boolean getDiceShown(){
+        return diceShown;
     }
 
     private void initDice() {
@@ -100,4 +106,3 @@ public class DiceAnimation extends ScreenAdapter {
         secondDiceList.add(diceSixSecond);
     }
 }
-
