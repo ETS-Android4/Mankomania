@@ -1,13 +1,14 @@
 package com.mankomania.game;
 
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class Connection {
-    private final String server = "https://mankomania-backend.herokuapp.com/";
+    private static final String server = "https://mankomania-backend.herokuapp.com/";
     private Socket cs;
 
     private boolean start = false;
@@ -16,6 +17,18 @@ public class Connection {
     private static String[] players = new String[4]; //Array with players ID
     public static void createConnection(){
         con = new Connection();
+    }
+
+    public Connection() {
+
+        try {
+            cs = IO.socket(server);
+            cs.connect();
+
+        } catch (URISyntaxException e) {
+            Logger logger = Logger.getLogger("Connection failed");
+
+        }
     }
 
     public String getServer() {
@@ -62,16 +75,6 @@ public class Connection {
         Connection.players = players;
     }
 
-    public Connection() {
-
-        try {
-            cs = IO.socket(server);
-            cs.connect();
-
-        } catch (URISyntaxException e) {
-
-        }
-    }
 
     public void joinRoom(Emitter.Listener el) {
         cs.on("join-room", el);
