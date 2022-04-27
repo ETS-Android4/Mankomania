@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.DiceAnimation;
-import com.mankomania.game.MankomaniaGame;
 
 public class GameScreen extends ScreenAdapter {
     private final Texture gameBoard;
@@ -41,6 +40,10 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
     private static final String BOARD_TEXT_STYLE = "title";
 
+    private DiceAnimation diceAnimation;
+    private final float duration = 3;
+    private float elapsed;
+
     public GameScreen() {
         gameBoard = new Texture("board.jpg");
         stage = new Stage();
@@ -51,6 +54,8 @@ public class GameScreen extends ScreenAdapter {
         turnDialogIsShown = false;
         turnDialog = new Dialog("INFO", skin, "alt") {};
         turnDialogNeeded = false;
+        diceAnimation = new DiceAnimation();
+        elapsed = 0;
 
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
@@ -60,7 +65,14 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if (elapsed >= duration){
+            diceAnimation.removeDice();
+        diceAnimation.diceShown = false;
+        }
         super.render(delta);
+        if(diceAnimation.diceShown){
+            elapsed+=delta;
+        }
         stage.act(delta);
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
         drawGameBoard();
@@ -178,7 +190,7 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
                 hideTurnDialog();
-                MankomaniaGame.getInstance().setScreen(new DiceAnimation());
+                diceAnimation.showDice(stage);
             }
         };
     }
