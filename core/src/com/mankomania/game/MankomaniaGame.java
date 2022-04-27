@@ -24,15 +24,12 @@ public class MankomaniaGame extends Game {
 
     @Override
     public void create() {
-        //Get current Screen to dispose later
         Gdx.input.setInputProcessor(new InputMultiplexer());
         Screen currentScreen = this.getScreen();
 
-        //Set new Screen
         ScreenAdapter loadingScreen = new LoadingScreen(new StartScreen());
         this.setScreen(loadingScreen);
 
-        //dispose old Screen
         if (currentScreen != null) {
             currentScreen.dispose();
         }
