@@ -98,9 +98,7 @@ public class LobbyScreen extends ScreenAdapter {
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
-                /**
-                 * Close connection
-                 */
+
                 //StartScreen.con.closeConnection();
             }
         };
@@ -111,9 +109,6 @@ public class LobbyScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
 
-                /**
-                 * Emits to server, that the client is ready to play
-                 */
                 Emitter.Listener el = new Emitter.Listener() {
 
                     @Override
@@ -124,10 +119,6 @@ public class LobbyScreen extends ScreenAdapter {
 
                     }
                 };
-
-                /**
-                 * Server responses with "startGame", when 4 player are available
-                 */
 
                 Connection.con.readyForGame(el, Connection.lobbyID);
 

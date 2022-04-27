@@ -75,21 +75,13 @@ public class StartScreen extends ScreenAdapter {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new LobbyScreen());
 
-                /**
-                 * Create connection to Server
-                 */
                 Connection.createConnection();
 
-                /**
-                 * Emits Server, that the client wants to join a lobby
-                 * Server returns String Array with IDs of players
-                 */
                 Emitter.Listener el = new Emitter.Listener() {
 
                     @Override
                     public void call(Object... args) {
                         Connection.lobbyID = args[0].toString();
-                        System.out.println("LobbyID: " + Connection.lobbyID);
 
                         String temp = args[1].toString().substring(1, args[1].toString().length()-1);
 
