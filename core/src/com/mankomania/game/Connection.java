@@ -8,7 +8,6 @@ import io.socket.emitter.Emitter;
 
 public class Connection {
     private final String server = "https://mankomania-backend.herokuapp.com/";
-    //private final int port;
     private Socket cs;
 
     /**
@@ -34,8 +33,8 @@ public class Connection {
             System.out.println("Connection created");
 
         } catch (URISyntaxException e) {
-            e.printStackTrace();
             System.out.println("Couldn't connect to server");
+            System.out.println("Error thrown in line 36 in class Connection");
         }
     }
 
