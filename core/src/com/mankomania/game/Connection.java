@@ -12,6 +12,17 @@ public class Connection {
     private Socket cs;
 
     /**
+     * Static fields
+     */
+    public static boolean start = false;
+    public static Connection con;
+    public static String lobbyID;
+    public static String[] players = new String[4]; //Array with players ID
+    public static void createConnection(){
+        con = new Connection();
+    }
+
+    /**
      * Constructor:
      * Creates a socket connection to the server
      */
@@ -34,15 +45,12 @@ public class Connection {
     }
 
     public void readyForGame(Emitter.Listener el, String lobbyID) {
-        cs.on("startGame", el);
+        cs.once("test2", el);
         System.out.println(lobbyID);
         cs.emit("readyForGame", lobbyID);
     }
 
 
-    /**
-     * Close connection to server
-     */
     public void closeConnection() {
 
         cs.disconnect();

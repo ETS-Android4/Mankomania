@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
 import io.socket.emitter.Emitter;
@@ -118,17 +119,22 @@ public class LobbyScreen extends ScreenAdapter {
                     @Override
                     public void call(Object... args) {
                         System.out.println("Response: " + args[0]);
-                        // MankomaniaGame.getInstance().disposeCurrentScreen();
-                        // MankomaniaGame.getInstance().setScreen(new GameScreen());
+
+                        Connection.start = true;
+
                     }
                 };
 
                 /**
-                 * Server responses with "startGame", when all clients are ready
+                 * Server responses with "startGame", when 4 player are available
                  */
 
-                StartScreen.con.readyForGame(el, StartScreen.lobbyID);
+                Connection.con.readyForGame(el, Connection.lobbyID);
 
+                if(Connection.start == true){
+                    MankomaniaGame.getInstance().disposeCurrentScreen();
+                    MankomaniaGame.getInstance().setScreen(new GameScreen());
+                }
             }
         };
     }
@@ -137,6 +143,11 @@ public class LobbyScreen extends ScreenAdapter {
     public void render(float delta) {
         super.render(delta);
         MankomaniaGame.renderMenu(stage, batch, delta, background);
+    }
+
+    public void doDispose(){
+        MankomaniaGame.getInstance().disposeCurrentScreen();
+        MankomaniaGame.getInstance().setScreen(new GameScreen());
     }
 
     @Override
