@@ -29,11 +29,12 @@ server.listen(PORT, ()=>{
 
         socket.on("join-room", (room) =>{
             validateRoom(room, socket);
+
         });
 
         socket.on("readyForGame", (room) =>{
             increaseGameLobbyCounter(room);
-            checkIfRoomIsReady(room);
+            checkIfRoomIsReady(room, socket);
         });
 
         socket.on('disconnect', () => {
@@ -47,13 +48,18 @@ function increaseGameLobbyCounter (room){
     console.log(lobby.get(room))
 }
 
-function checkIfRoomIsReady(room){
+function checkIfRoomIsReady(room, socket){
     io.in(room).allSockets().then(result=>{
-        if(result.size === lobby.get(room)){
-            io.in(room).emit('test2', ("Hallo"));
+        //if(result.size === lobby.get(room)){
+        if(result.size === 4){
+            sendGameStarts(room)
             console.log("Game started")
         }
     })
+}
+
+function sendGameStarts(room){
+    io.in(room).emit("test2", "Hello");
 }
 
 async function validateRoom(room, socket) {
@@ -69,6 +75,8 @@ async function validateRoom(room, socket) {
                 socket.to(room).emit("join-room", room, ids)
                 console.log(socket.id + " joined " + room)
                 createLobby(room);
+                increaseGameLobbyCounter(room);
+                checkIfRoomIsReady(room, socket);
             },
             function(ids){
                 console.log(ids)
@@ -117,3 +125,4 @@ instrument(io, {
     auth: false
 });
 */
+

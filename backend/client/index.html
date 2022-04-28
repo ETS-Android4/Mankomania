@@ -9,8 +9,8 @@
 <script type="module">
     import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
-    //const socket = io('http://localhost:3000');
-    const socket = io('https://mankomania-backend.herokuapp.com');
+    const socket = io('http://localhost:3000');
+    //const socket = io('https://mankomania-backend.herokuapp.com');
     let lobby;
 
     socket.on("connect", () => {
@@ -33,6 +33,8 @@
         displayMessage("Game starts " + msg);
 
     })
+
+
 
     const messageInput = document.getElementById("message");
     const roomInput = document.getElementById("room");
