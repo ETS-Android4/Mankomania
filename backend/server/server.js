@@ -59,7 +59,7 @@ function checkIfRoomIsReady(room, socket){
 }
 
 function sendGameStarts(room){
-    io.in(room).emit("test2", "Hello");
+    io.in(room).emit("startGame", "Hello");
 }
 
 async function validateRoom(room, socket) {

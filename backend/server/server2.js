@@ -16,7 +16,12 @@ const { v4: uuidv4 } = require('uuid');
 const rooms = {};
 
 
-
+/**
+ * Check if a private Room was send
+ * @param socket A connected socket.io socket
+ * @param room Name of the room
+ * @param io 
+ */
 function validateRoom(socket, room, io){
     if(room === ''){
         let roomID = searchEmptyRooms();
@@ -33,7 +38,10 @@ function validateRoom(socket, room, io){
 }
 
 
-
+/**
+ * Will create a new Room and returns the room
+ * @returns {{ready: number, id: (*|string), sockets: *[], status: boolean}}
+ */
 function  createRoom () {
     const room = {
         id: uuidv4(), // generate a unique id for the new room, that way we don't need to deal with duplicates.
@@ -47,7 +55,12 @@ function  createRoom () {
     return room;
 }
 
+/**
+ * Will search for Empty Rooms and returns a room
+ * @returns {room}
+ */
 function searchEmptyRooms(){
+    console.log("Search")
     for (const id in rooms) {
         const room = rooms[id];
         if(room.sockets.length < 4 && room.status === false){
@@ -59,21 +72,27 @@ function searchEmptyRooms(){
  * Will connect a socket to a specified room
  * @param socket A connected socket.io socket
  * @param room An object that represents a room from the `rooms` instance variable object
+ * @param io
  */
 function joinRoom(socket, room, io) {
     room.sockets.push(socket.id);
     socket.join(room.id);
     console.log(socket.id, "Joined", room.id);
-    io.in(room.id).emit('join-room', room.id, room.sockets)
+    io.in(room.id).emit('join-room', room.id, room.sockets);
 
 
     if(room.sockets.length === 4){
         room.status = true;
         console.log(room.id + " is full")
+        io.in(room.id).emit('startGame', room.id, room.sockets);
         createRoom();
     }
 }
 
+/**
+ * Will make the socket leave any rooms that it is a part of
+ * @param socket A connected socket.io socket
+ */
 function leaveRooms(socket){
     const roomsToDelete = [];
     // check to see if the socket is in the current room
@@ -99,6 +118,27 @@ function leaveRooms(socket){
     }
 }
 
+/**
+ *
+ * @param socket
+ * @param room
+ * @param io
+ */
+function increaseReadyCounterForRoom(socket, room, io){
+if(rooms[room] !== undefined){
+    rooms[room].ready++;
+    if(rooms[room].ready === rooms[room].sockets.length && rooms[room].sockets.length >= 2){
+        rooms[room].status = true;
+        io.in(room).emit('startGame', room, rooms[room]);
+        console.log("Game starts " + room)
+    }
+}else{
+    io.to(socket).emit('error', "Couldn't find Room");
+}
+}
+
+
+
 app.get('/', (req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
     res.end();
@@ -122,7 +162,8 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on("readyForGame", (room, socket) =>{
+    socket.on('readyForGame', (room) =>{
+        increaseReadyCounterForRoom(socket, room, io);
 
     });
 
@@ -136,13 +177,6 @@ io.on('connection', (socket) => {
 
     });
 });
-
-
-
-
-
-
-
 
 
 /*
