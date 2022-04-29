@@ -35,6 +35,7 @@ public class StartScreen extends ScreenAdapter {
             inputMultiplexer.addProcessor(stage);
         }
         initTableAndAddActor(stage);
+
     }
 
     private void initTableAndAddActor(Stage stage) {
@@ -77,24 +78,49 @@ public class StartScreen extends ScreenAdapter {
 
                 Connection.createConnection();
 
+                Emitter.Listener e = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+                        Connection.getCon().setStart(true);
+
+                        System.out.println("Lobby ID: " + args[0]);
+
+                        System.out.println("Start: " + Connection.getCon().getStart());
+
+
+                    }
+                };
+
+                Connection.getCon().readyForGame(e);
+
                 Emitter.Listener el = new Emitter.Listener() {
 
                     @Override
                     public void call(Object... args) {
                         Connection.setLobbyID(args[0].toString());
 
-                        String temp = args[1].toString().substring(1, args[1].toString().length()-1);
+                        String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
 
                         String temp1 = temp.replaceAll("[\"]", "");
 
                         Connection.setPlayers(temp1.split(","));
 
+                        for (int i = 0; i < Connection.getPlayers().length; i++) {
+                            if (Connection.getPlayers()[i].equals(Connection.getCon().getCs().id())) {
+                                System.out.println("Me: " + Connection.getPlayers()[i]);
+                            } else {
+                                System.out.println("Player " + (i + 1) + ": " + Connection.getPlayers()[i]);
+                            }
+                        }
+                        System.out.println();
                     }
                 };
-
                 Connection.getCon().joinRoom(el);
+
             }
         };
+
     }
 
     @Override
@@ -108,4 +134,5 @@ public class StartScreen extends ScreenAdapter {
         inputMultiplexer.removeProcessor(stage);
         stage.dispose();
     }
+
 }

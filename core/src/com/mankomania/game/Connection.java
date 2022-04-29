@@ -1,8 +1,7 @@
 package com.mankomania.game;
 
-import java.net.URISyntaxException;
-import java.util.logging.Logger;
 
+import java.net.URISyntaxException;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -25,8 +24,11 @@ public class Connection {
             cs = IO.socket(server);
             cs.connect();
 
+            System.out.println("Connection created");
+
         } catch (URISyntaxException e) {
-            Logger logger = Logger.getLogger("Connection failed");
+            e.printStackTrace();
+            System.out.println("Couldn't connect to server");
 
         }
     }
@@ -81,14 +83,15 @@ public class Connection {
         cs.emit("join-room", "");
     }
 
-    public void readyForGame(Emitter.Listener el, String lobbyID) {
-        cs.once("test2", el);
-        cs.emit("readyForGame", lobbyID);
+    public void readyForGame(Emitter.Listener el) {
+        cs.on("startGame", el);
     }
 
     public void closeConnection() {
+        cs.emit("leaveRoom", "");
         cs.disconnect();
         cs.off();
         cs.close();
     }
+
 }

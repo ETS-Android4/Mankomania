@@ -18,9 +18,8 @@ import com.badlogic.gdx.utils.Align;
 import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
-import io.socket.emitter.Emitter;
 
-public class LobbyScreen extends ScreenAdapter {
+public class LobbyScreen extends ScreenAdapter{
     private final Stage stage;
     private final Texture background;
     private final SpriteBatch batch;
@@ -89,6 +88,7 @@ public class LobbyScreen extends ScreenAdapter {
         backButton.addListener(backListener());
 
         stage.addActor(tab);
+
     }
 
 
@@ -99,6 +99,8 @@ public class LobbyScreen extends ScreenAdapter {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
 
+                Connection.getCon().closeConnection();
+
             }
         };
     }
@@ -108,21 +110,24 @@ public class LobbyScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
 
-                Emitter.Listener el = new Emitter.Listener() {
+                if(Connection.getCon().getStart()){
+                    MankomaniaGame.getInstance().disposeCurrentScreen();
+                    MankomaniaGame.getInstance().setScreen(new GameScreen());
+                }
+
+        /**        Emitter.Listener el = new Emitter.Listener() {
 
                     @Override
                     public void call(Object... args) {
                         Connection.getCon().setStart(true);
 
+                        System.out.println("StartResponse: " + args[0]);
+
                     }
-                };
+                };**/
 
-                Connection.getCon().readyForGame(el, Connection.getLobbyID());
+                //Connection.getCon().readyForGame(el, Connection.getLobbyID());
 
-                if(Connection.getCon().getStart()){
-                    MankomaniaGame.getInstance().disposeCurrentScreen();
-                    MankomaniaGame.getInstance().setScreen(new GameScreen());
-                }
             }
         };
     }
@@ -143,4 +148,5 @@ public class LobbyScreen extends ScreenAdapter {
         inputMultiplexer.removeProcessor(stage);
         stage.dispose();
     }
+
 }
