@@ -26,8 +26,16 @@ public class LobbyScreen extends ScreenAdapter{
     private final Table tab;
     private final Table innerTab;
     private InputMultiplexer inputMultiplexer;
+    private String[] players;
+    private final Skin skin;
+    private Label label1;
+    private Label label2;
+    private Label label3;
+    private Label label4;
 
     public LobbyScreen() {
+        skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
+        skin.getFont("font").getData().setScale(5, 5);
 
         stage = new Stage();
         batch = new SpriteBatch();
@@ -40,7 +48,13 @@ public class LobbyScreen extends ScreenAdapter{
 
         innerTab = new Table();
         innerTab.setWidth(stage.getWidth());
-        innerTab.align(Align.center | Align.top);
+        innerTab.setHeight(stage.getHeight());
+        innerTab.align(Align.center);
+
+        label1 = new Label("",skin);
+        label2 = new Label("",skin);
+        label3 = new Label("",skin);
+        label4 = new Label("",skin);
 
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
@@ -50,9 +64,6 @@ public class LobbyScreen extends ScreenAdapter{
 
     @Override
     public void show() {
-        Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
-        skin.getFont("font").getData().setScale(5, 5);
-
         TextButton backButton = new TextButton("BACK", skin, "default");
         backButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
         backButton.addListener(backListener());
@@ -70,12 +81,10 @@ public class LobbyScreen extends ScreenAdapter{
         innerTab.setBackground(lobbyBackground);
         innerTab.add().expandY();
         innerTab.row();
-        innerTab.add(new Label("Player1", skin)).pad(20f).align(Align.center);
-        innerTab.row();
-        innerTab.add(new Label("Player2", skin)).pad(20f).align(Align.center);
-        innerTab.row();
-        innerTab.add(new Label("Player3", skin)).pad(20f).align(Align.center);
-        innerTab.row();
+        innerTab.add(label1).pad(20f).align(Align.center).row();
+        innerTab.add(label2).pad(20f).align(Align.center).row();
+        innerTab.add(label3).pad(20f).align(Align.center).row();
+        innerTab.add(label4).pad(20f).align(Align.center).row();
         innerTab.add().expandY();
 
         tab.add(lobbyImage).size(Gdx.graphics.getWidth() / 4f, Gdx.graphics.getHeight() / 5f).padTop(50).colspan(2).center();
@@ -83,12 +92,31 @@ public class LobbyScreen extends ScreenAdapter{
         tab.add(innerTab).colspan(2).expandY();
         tab.row();
 
-        tab.add(backButton).expand().bottom().left().padLeft(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
-        tab.add(startButton).expand().bottom().right().padRight(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
-        backButton.addListener(backListener());
+        tab.add(backButton).expandX().left().padLeft(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
+        tab.add(startButton).expandX().bottom().right().padRight(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
 
         stage.addActor(tab);
+    }
 
+    private void update(){
+        players = Connection.getPlayers();
+
+        label1.setText(players[0]);
+
+        if(players.length == 2) {
+            label2.setText(players[1]);
+        }
+
+        if(players.length == 3) {
+            label2.setText(players[1]);
+            label3.setText(players[2]);
+        }
+
+        if(players.length == 4) {
+            label2.setText(players[1]);
+            label3.setText(players[2]);
+            label4.setText(players[3]);
+        }
     }
 
 
@@ -123,12 +151,11 @@ public class LobbyScreen extends ScreenAdapter{
     public void render(float delta) {
         super.render(delta);
         MankomaniaGame.renderMenu(stage, batch, delta, background);
-
+        update();
         if(Connection.getStart()){
             MankomaniaGame.getInstance().disposeCurrentScreen();
             MankomaniaGame.getInstance().setScreen(new GameScreen());
         }
-
     }
 
     public void doDispose(){

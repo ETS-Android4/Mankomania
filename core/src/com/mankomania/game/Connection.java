@@ -11,7 +11,7 @@ public class Connection {
 
     private static boolean start = false;
     private static String lobbyID;
-    private static String[] players = new String[4];
+    private static String[] players = {"", "", "", ""};
 
     public static void createConnection(){
         try {
