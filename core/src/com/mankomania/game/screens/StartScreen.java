@@ -78,23 +78,22 @@ public class StartScreen extends ScreenAdapter {
 
                 Connection.createConnection();
 
-                Emitter.Listener e = new Emitter.Listener() {
+                Emitter.Listener startGameListener = new Emitter.Listener() {
 
                     @Override
                     public void call(Object... args) {
-                        Connection.getCon().setStart(true);
+                        Connection.setStart(true);
 
                         System.out.println("Lobby ID: " + args[0]);
 
-                        System.out.println("Start: " + Connection.getCon().getStart());
-
+                        Connection.setLobbyID(args[0].toString());
 
                     }
                 };
 
-                Connection.getCon().readyForGame(e);
+                Connection.readyForGame(startGameListener);
 
-                Emitter.Listener el = new Emitter.Listener() {
+                Emitter.Listener joinRoomListener = new Emitter.Listener() {
 
                     @Override
                     public void call(Object... args) {
@@ -107,20 +106,17 @@ public class StartScreen extends ScreenAdapter {
                         Connection.setPlayers(temp1.split(","));
 
                         for (int i = 0; i < Connection.getPlayers().length; i++) {
-                            if (Connection.getPlayers()[i].equals(Connection.getCon().getCs().id())) {
+                            if (Connection.getPlayers()[i].equals(Connection.getCs().id())) {
                                 System.out.println("Me: " + Connection.getPlayers()[i]);
                             } else {
                                 System.out.println("Player " + (i + 1) + ": " + Connection.getPlayers()[i]);
                             }
                         }
-                        System.out.println();
                     }
                 };
-                Connection.getCon().joinRoom(el);
-
+                Connection.joinRoom(joinRoomListener);
             }
         };
-
     }
 
     @Override
