@@ -17,7 +17,6 @@ public class Connection {
         try {
             cs = IO.socket(server);
             cs.connect();
-            System.out.println("Connection created");
 
         } catch (URISyntaxException e) {
             System.out.println("Couldn't connect to server");

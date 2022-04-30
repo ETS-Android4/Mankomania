@@ -84,8 +84,6 @@ public class StartScreen extends ScreenAdapter {
                     public void call(Object... args) {
                         Connection.setStart(true);
 
-                        System.out.println("Lobby ID: " + args[0]);
-
                         Connection.setLobbyID(args[0].toString());
 
                     }
@@ -105,13 +103,6 @@ public class StartScreen extends ScreenAdapter {
 
                         Connection.setPlayers(temp1.split(","));
 
-                        for (int i = 0; i < Connection.getPlayers().length; i++) {
-                            if (Connection.getPlayers()[i].equals(Connection.getCs().id())) {
-                                System.out.println("Me: " + Connection.getPlayers()[i]);
-                            } else {
-                                System.out.println("Player " + (i + 1) + ": " + Connection.getPlayers()[i]);
-                            }
-                        }
                     }
                 };
                 Connection.joinRoom(joinRoomListener);
