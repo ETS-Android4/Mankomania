@@ -100,7 +100,6 @@ function leaveRooms(socket){
         const room = rooms[id];
 
         if(room.sockets.includes(socket.id)){
-            //console.log("Includes")
             socket.leave(id)
             // remove the socket from the room object
             room.sockets = room.sockets.filter((item) => item !== socket.id);

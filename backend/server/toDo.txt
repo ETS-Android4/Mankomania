@@ -1,0 +1,26 @@
+Lobby
+ -  Rejoin if lobby is/was ready
+ -  private games
+
+Game information exchange
+-   Player
+        money
+        currentPosition
+        stocks
+
+
+
+Minigames
+-   Lotterie
+-   Die Börse
+-   Das Auktionshaus
+-   Die Rennstrecke
+-   Der Snake-eys-tisch
+-   Das Casino
+
+
+MongoDB
+-   JWT Toke
+-
+
+
