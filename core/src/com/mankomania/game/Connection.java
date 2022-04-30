@@ -24,6 +24,10 @@ public class Connection {
         }
     }
 
+    private Connection(){
+        
+    }
+
     public static Socket getCs() {
         return cs;
     }
