@@ -8,11 +8,6 @@ const PORT = process.env.PORT || 3000;
 //const { instrument } = require("@socket.io/admin-ui");
 
 let clientNo = 1;
-const lobbies = new Map();
-lobbies.set("0", 0);
-
-
-
 
 app.get('/', (req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
@@ -29,49 +24,31 @@ console.log('Listing on*:3000')
             validateRoom(room, socket);
         });
 
-        socket.on('readyForGame', (room) =>{
-            console.log(room)
-        });
-
         socket.on('disconnect', () => {
             console.log('A user has disconnected.');
 
         })
-
     });
 
 
 })
 
+function validateRoom(room, socket){
+    //toDo with Map
+    if(room === ''){
+        clientNo++;
+        socket.join(Math.round(clientNo/4));
+        socket.emit("join-room", Math.round(clientNo/4))
+        console.log(socket.id + " joined " + Math.round(clientNo/4))
 
+    }else{
+        //client --> check if room is naN
+       socket.join(room);
+       socket.emit('join-room', room);
+       console.log(socket.id + " joined " + room)
+    }
 
- async function validateRoom(room, socket) {
-     if (room === '') {
-         clientNo++;
-         let room = Math.round(clientNo / 4)
-         socket.join(room);
-
-         let ids= Array.from(await io.in(room).allSockets());
-         console.log(ids);
-
-
-         socket.emit("join-room", room, ids)
-         socket.to(room).emit("join-room", room, ids)
-         console.log(socket.id + " joined " + room)
-
-     } else {
-         //client --> check if room is naN
-         socket.join(room);
-         socket.emit('join-room', room);
-         console.log(socket.id + " joined " + room)
-     }
- }
-
-
-
-
-
-
+}
 
 function startGame(){
 

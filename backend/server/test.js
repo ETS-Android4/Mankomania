@@ -7,5 +7,4 @@ lobby.set("3", 4)
 
 console.log(lobby.get("1"))
 
-lobby.set("1", 5)
-console.log(lobby.get("1"))
+console.log(lobby.size)
