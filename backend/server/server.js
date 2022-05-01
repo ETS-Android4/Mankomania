@@ -5,137 +5,14 @@ const server = http.createServer(app);
 const {Server} = require("socket.io");
 const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
-const { v4: uuidv4 } = require('uuid');
 //const { instrument } = require("@socket.io/admin-ui");
 
 
 
-/**
- * Instance Variables
- */
-const rooms = {};
+let clientNo = 1;
+let lobby = new Map();
 
 
-/**
- * Check if a private Room was send
- * @param socket A connected socket.io socket
- * @param room Name of the room
- * @param io
- */
-function validateRoom(socket, room, io){
-    if(room === ''){
-        let roomID = searchEmptyRooms();
-        if (roomID === undefined){
-            joinRoom(socket, createRoom(), io);
-
-        }else{
-            joinRoom(socket,roomID, io)
-        }
-
-    }else{
-        //ToDo private Game
-    }
-}
-
-
-/**
- * Will create a new Room and returns the room
- * @returns {{ready: number, id: (*|string), sockets: *[], status: boolean}}
- */
-function  createRoom () {
-    const room = {
-        id: uuidv4(), // generate a unique id for the new room, that way we don't need to deal with duplicates.
-        status: false,
-        sockets: [],
-        ready: 0
-    };
-    rooms[room.id] = room;
-    // have the socket join the room they've just created.
-    console.log("Room created " + room.id)
-    return room;
-}
-
-/**
- * Will search for Empty Rooms and returns a room
- * @returns {room}
- */
-function searchEmptyRooms(){
-    console.log("Search")
-    for (const id in rooms) {
-        const room = rooms[id];
-        if(room.sockets.length < 4 && room.status === false){
-            return room;
-        }
-    }
-}
-/**
- * Will connect a socket to a specified room
- * @param socket A connected socket.io socket
- * @param room An object that represents a room from the `rooms` instance variable object
- * @param io
- */
-function joinRoom(socket, room, io) {
-    room.sockets.push(socket.id);
-    socket.join(room.id);
-    console.log(socket.id, "Joined", room.id);
-    io.in(room.id).emit('join-room', room.id, room.sockets);
-
-
-    if(room.sockets.length === 4){
-        room.status = true;
-        console.log(room.id + " is full")
-        io.in(room.id).emit('startGame', room.id, room.sockets);
-        createRoom();
-    }
-}
-
-/**
- * Will make the socket leave any rooms that it is a part of
- * @param socket A connected socket.io socket
- */
-function leaveRooms(socket){
-    const roomsToDelete = [];
-    // check to see if the socket is in the current room
-    for(const id in rooms){
-        const room = rooms[id];
-
-        if(room.sockets.includes(socket.id)){
-            //console.log("Includes")
-            socket.leave(id)
-            // remove the socket from the room object
-            room.sockets = room.sockets.filter((item) => item !== socket.id);
-            console.log(room.sockets)
-
-        }
-        // Prepare to delete any rooms that are now empty
-        if (room.sockets.length === 0) {
-            roomsToDelete.push(room);
-        }
-    }
-    // Delete all the empty rooms that we found earlier
-    for (const room of roomsToDelete) {
-        delete rooms[room.id];
-    }
-}
-
-/**
- *
- * @param socket
- * @param room
- * @param io
- */
-function increaseReadyCounterForRoom(socket, room, io){
-    if(rooms[room] !== undefined){
-        rooms[room].ready++;
-        if(rooms[room].ready === rooms[room].sockets.length && rooms[room].sockets.length >= 2){
-            rooms[room].status = true;
-            io.in(room).emit('startGame', room, rooms[room]);
-            console.log("Game starts " + room)
-        }
-    }else{
-        io.to(socket).emit('error', "Couldn't find Room");
-    }
-}
 
 
 
@@ -147,45 +24,105 @@ app.get('/', (req, res) =>{
 server.listen(PORT, ()=>{
     console.log('Listing on*:3000')
 
+    io.on('connection', (socket) => {
+        console.log(socket.id)
+
+        socket.on("join-room", (room) =>{
+            validateRoom(room, socket);
+
+        });
+
+        socket.on("readyForGame", (room) =>{
+            increaseGameLobbyCounter(room);
+            checkIfRoomIsReady(room, socket);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('A user has disconnected.');
+        })
+    });
 })
 
+function increaseGameLobbyCounter (room){
+    lobby.set(room, lobby.get(room) + 1);
+    console.log(lobby.get(room))
+}
 
-io.on('connection', (socket) => {
-    console.log(socket.id)
-    console.log(rooms)
+function checkIfRoomIsReady(room, socket){
+    io.in(room).allSockets().then(result=>{
+        //if(result.size === lobby.get(room)){
+        if(result.size === 4){
+            sendGameStarts(room)
+            console.log("Game started")
+        }
+    })
+}
+
+function sendGameStarts(room){
+    io.in(room).emit("startGame", "Hello");
+}
+
+async function validateRoom(room, socket) {
+    if (room === '') {
+        clientNo++;
+        let room = Math.round(clientNo / 4)
+        socket.join(room);
+
+        idsInRoom(room).then(
+            function(ids){
+                console.log(ids);
+                socket.emit("join-room", room, ids)
+                socket.to(room).emit("join-room", room, ids)
+                console.log(socket.id + " joined " + room)
+                createLobby(room);
+                increaseGameLobbyCounter(room);
+                checkIfRoomIsReady(room, socket);
+            },
+            function(ids){
+                console.log(ids)
+                //toDo
+            }
+        );
+
+    } else {
+        //client --> check if room is naN
+        socket.join(room);
+        socket.emit('join-room', room);
+        console.log(socket.id + " joined " + room)
+    }
+}
+
+async function idsInRoom(room){
+    return Array.from(await io.in(room).allSockets());
+}
+
+function createLobby(room){
+    if(lobby.size === 0){
+        lobby.set(room, 0);
+        console.log("Lobby with " + room + " created");
+    }else{
+        lobby.set(room, 0);
+
+    }
+}
 
 
 
-    socket.on('join-room', (room) => {
-        validateRoom(socket, room, io);
 
 
-    });
-
-    socket.on('readyForGame', (room) =>{
-        increaseReadyCounterForRoom(socket, room, io);
-
-    });
-
-    socket.on('leaveRoom', () => {
-        leaveRooms(socket);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-        leaveRooms(socket);
-
-    });
-});
 
 
+
+
+
+
+
+function startGame(){
+
+}
 /*
 instrument(io, {
     auth: false
 });
 */
-
-
-
-
 
