@@ -35,9 +35,9 @@
     const sendMessageButton = document.getElementById("sendMessage");
     const joinRoomButton = document.getElementById("joinRoom");
     const disconnectButton = document.getElementById("disconnect");
-    const readyForGameButton = document.getElementById("readyForGame")
+    const startGameButton = document.getElementById("startGame")
 
-    readyForGameButton.addEventListener("click", e=>{
+    startGameButton.addEventListener("click", e=>{
         socket.emit('readyForGame', lobby)
     })
 
@@ -120,7 +120,7 @@
     </div>
 
     <div>
-        <button class="btn" type="button" id="readyForGame">Ready for Game</button>
+        <button class="btn" type="button" id="startGame">Start Game</button>
     </div>
 
 </div>
