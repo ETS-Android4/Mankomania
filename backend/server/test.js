@@ -58,28 +58,8 @@ function create(){
 
 
 
-/*
+
 
 createRoom();
 check();
 console.log(rooms)
-*/
-
-const room = {
-    id: uuidv4(),// generate a unique id for the new room, that way we don't need to deal with duplicates.
-    sockets: [],
-    status: false
-};
-rooms[room.id] = room;
-let find = 'room.id';
-
-const room2 = {
-    id: uuidv4(),// generate a unique id for the new room, that way we don't need to deal with duplicates.
-    sockets: [],
-    status: false
-};
-rooms[room2.id] = room2;
-
-//console.log(rooms)
-
-console.log(rooms[find])
