@@ -50,16 +50,14 @@ console.log('Listing on*:3000')
          clientNo++;
          let room = Math.round(clientNo / 4)
          socket.join(room);
-         
-         idsInRoom(room).then(
-             function(ids){
-                 console.log(ids);
-                 socket.emit("join-room", room, ids)
-                 socket.to(room).emit("join-room", room, ids)
-                 console.log(socket.id + " joined " + room)
-             }
-         )
 
+         let ids= Array.from(await io.in(room).allSockets());
+         console.log(ids);
+
+
+         socket.emit("join-room", room, ids)
+         socket.to(room).emit("join-room", room, ids)
+         console.log(socket.id + " joined " + room)
 
      } else {
          //client --> check if room is naN
@@ -67,11 +65,6 @@ console.log('Listing on*:3000')
          socket.emit('join-room', room);
          console.log(socket.id + " joined " + room)
      }
- }
-
- async function idsInRoom(room){
-     //return JSON.stringify(Array.from(await io.in(room).allSockets()));
-     return Array.from(await io.in(room).allSockets());
  }
 
 
