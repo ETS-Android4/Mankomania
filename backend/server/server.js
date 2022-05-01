@@ -17,10 +17,10 @@ const rooms = {};
 
 
 /**
- * Check if a private Room was send or a new room should be created or join to an room
+ * Check if a private Room was send
  * @param socket A connected socket.io socket
  * @param room Name of the room
- * @param io server instance
+ * @param io
  */
 function validateRoom(socket, room, io){
     if(room === ''){
@@ -69,10 +69,10 @@ function searchEmptyRooms(){
     }
 }
 /**
- * Will connect an socket to an specified room
+ * Will connect a socket to a specified room
  * @param socket A connected socket.io socket
  * @param room An object that represents a room from the `rooms` instance variable object
- * @param io server instance
+ * @param io
  */
 function joinRoom(socket, room, io) {
     room.sockets.push(socket.id);
@@ -119,10 +119,10 @@ function leaveRooms(socket){
 }
 
 /**
- * Increase the ready counter for thr room object
- * @param socket A connected socket.io socket
- * @param room room An object that represents a room from the `rooms` instance variable object
- * @param io io server instance
+ *
+ * @param socket
+ * @param room
+ * @param io
  */
 function increaseReadyCounterForRoom(socket, room, io){
     if(rooms[room] !== undefined){
