@@ -22,7 +22,7 @@ app.get('/', (req, res) =>{
 })
 
 server.listen(PORT, ()=>{
-    console.log('Listing on*:3000')
+console.log('Listing on*:3000')
 
     io.on('connection', (socket) => {
         console.log(socket.id)
@@ -31,7 +31,7 @@ server.listen(PORT, ()=>{
             validateRoom(room, socket);
         });
 
-        socket.on("readyForGame", (room) =>{
+        socket.on('readyForGame', (room) =>{
             increaseGameLobbyCounter(room);
             checkIfRoomIsReady(room);
         });
@@ -43,64 +43,57 @@ server.listen(PORT, ()=>{
 })
 
 function increaseGameLobbyCounter (room){
+    
     lobby.set(room, lobby.get(room) + 1);
-    console.log(lobby.get(room))
 }
 
 function checkIfRoomIsReady(room){
     io.in(room).allSockets().then(result=>{
-        if(result.size === lobby.get(room)){
-            io.in(room).emit('test2', ("Hallo"));
-            console.log("Game started")
-        }
-    })
-}
-
-async function validateRoom(room, socket) {
-    if (room === '') {
-        clientNo++;
-        let room = Math.round(clientNo / 4)
-        socket.join(room);
-
-        idsInRoom(room).then(
-            function(ids){
-                console.log(ids);
-                socket.emit("join-room", room, ids)
-                socket.to(room).emit("join-room", room, ids)
-                console.log(socket.id + " joined " + room)
-                createLobby(room);
-            },
-            function(ids){
-                console.log(ids)
-                //toDo
-            }
-        );
-
-    } else {
-        //client --> check if room is naN
-        socket.join(room);
-        socket.emit('join-room', room);
-        console.log(socket.id + " joined " + room)
+    if(result.size === lobby.get(room)){
+        io.emit("startGame");
     }
+      })
 }
 
-async function idsInRoom(room){
-    return Array.from(await io.in(room).allSockets());
-}
+ async function validateRoom(room, socket) {
+     if (room === '') {
+         clientNo++;
+         let room = Math.round(clientNo / 4)
+         socket.join(room);
 
-function createLobby(room){
+
+         idsInRoom(room).then(
+             function(ids){
+                 console.log(ids);
+                 socket.emit("join-room", room, ids)
+                 socket.to(room).emit("join-room", room, ids)
+                 console.log(socket.id + " joined " + room)
+                 createLobby(room);
+             },
+             function(ids){
+                console.log(ids)
+                 //toDo
+             }
+         );
+
+     } else {
+         //client --> check if room is naN
+         socket.join(room);
+         socket.emit('join-room', room);
+         console.log(socket.id + " joined " + room)
+     }
+ }
+
+ async function idsInRoom(room){
+     return Array.from(await io.in(room).allSockets());
+ }
+
+ function createLobby(room){
     if(lobby.size === 0){
         lobby.set(room, 0);
         console.log("Lobby with " + room + " created");
-    }else{
-        lobby.set(room, 0);
-
     }
-}
-
-
-
-
+ }
 
 
 
