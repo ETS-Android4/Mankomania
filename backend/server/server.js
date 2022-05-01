@@ -3,6 +3,7 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const {Server} = require("socket.io");
+const {createNewLobby} = require("./Lobby");
 const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
 //const { instrument } = require("@socket.io/admin-ui");
@@ -10,8 +11,8 @@ const PORT = process.env.PORT || 3000;
 
 
 let clientNo = 1;
-let lobby = new Map();
-
+const lobbies = new Map();
+lobbies.set("0", 0);
 
 
 
@@ -32,28 +33,20 @@ console.log('Listing on*:3000')
         });
 
         socket.on('readyForGame', (room) =>{
-            increaseGameLobbyCounter(room);
-            checkIfRoomIsReady(room);
+
+
+            console.log(room)
         });
 
         socket.on('disconnect', () => {
             console.log('A user has disconnected.');
+
         })
+
     });
+
+
 })
-
-function increaseGameLobbyCounter (room){
-    
-    lobby.set(room, lobby.get(room) + 1);
-}
-
-function checkIfRoomIsReady(room){
-    io.in(room).allSockets().then(result=>{
-    if(result.size === lobby.get(room)){
-        io.emit("startGame");
-    }
-      })
-}
 
  async function validateRoom(room, socket) {
      if (room === '') {
@@ -68,7 +61,7 @@ function checkIfRoomIsReady(room){
                  socket.emit("join-room", room, ids)
                  socket.to(room).emit("join-room", room, ids)
                  console.log(socket.id + " joined " + room)
-                 createLobby(room);
+                 createNewLobby(room)
              },
              function(ids){
                 console.log(ids)
@@ -85,16 +78,9 @@ function checkIfRoomIsReady(room){
  }
 
  async function idsInRoom(room){
+     //return JSON.stringify(Array.from(await io.in(room).allSockets()));
      return Array.from(await io.in(room).allSockets());
  }
-
- function createLobby(room){
-    if(lobby.size === 0){
-        lobby.set(room, 0);
-        console.log("Lobby with " + room + " created");
-    }
- }
-
 
 
 
